@@ -14,13 +14,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-class TreeTransferHandler99 extends TransferHandler {
+class OV_DashTransHandler extends TransferHandler {
 	DataFlavor nodesFlavor;
 	DataFlavor[] flavors = new DataFlavor[1];
 	DefaultMutableTreeNode[] nodesToRemove;
+	OI_TreeEncoder treeEncoder = new StringNodeEncoder();
 	// Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	public TreeTransferHandler99() {
+	public OV_DashTransHandler() {
 		try {
 			String mimeType = DataFlavor.javaJVMLocalObjectMimeType + ";class=\""
 					+ javax.swing.tree.DefaultMutableTreeNode[].class.getName() + "\"";
@@ -49,7 +50,7 @@ class TreeTransferHandler99 extends TransferHandler {
 			List<DefaultMutableTreeNode> copies = new ArrayList<DefaultMutableTreeNode>();
 			List<DefaultMutableTreeNode> toRemove = new ArrayList<DefaultMutableTreeNode>();
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) paths[0].getLastPathComponent();
-			DefaultMutableTreeNode copy = treeModel.copy(node);
+			DefaultMutableTreeNode copy = copy(node);
 
 			copies.add(copy);
 			toRemove.add(node);
@@ -59,10 +60,10 @@ class TreeTransferHandler99 extends TransferHandler {
 				if (next.getLevel() < node.getLevel()) {
 					break;
 				} else if (next.getLevel() > node.getLevel()) { // child node
-					copy.add(treeModel.copy(next));
+					copy.add(copy(next));
 					// node already contains child
 				} else { // sibling
-					copies.add(treeModel.copy(next));
+					copies.add(copy(next));
 					toRemove.add(next);
 				}
 			}
@@ -75,9 +76,14 @@ class TreeTransferHandler99 extends TransferHandler {
 		return null;
 	}
 
+	public DefaultMutableTreeNode copy(DefaultMutableTreeNode node) {
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
+		newNode.setUserObject(treeEncoder.encodeFreomTree(node)); // User Object change to String for TreeInfo;
+		return newNode;
+	}
+
 	// only check drop location
 	public boolean canImport(TransferHandler.TransferSupport support) {
-		System.out.println("camImport-0");
 		if (!support.isDrop()) {
 			return false;
 		}
@@ -131,20 +137,19 @@ class TreeTransferHandler99 extends TransferHandler {
 		// DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 		// Configure for drop mode.
 		int index = childIndex; // DropMode.INSERT
-		System.out.println("2) importData.--1");
 		if (childIndex == -1) { // DropMode.ON
 			index = parent.getChildCount();
 		}
 		// Add data to model.
 		for (int i = 0; i < nodes.length; i++) {
 			// model.insertNodeInto(nodes[i], parent, index++);
-			treeModel.insertNodeInto(treeModel.decodeTreeNode((String) nodes[i].getUserObject()), parent, index++);
+			treeModel.insertNodeInto(treeEncoder.decodeToTree((String) nodes[i].getUserObject()), parent, index++);
 		}
 		return true;
 	}
 
 	protected void exportDone(JComponent source, Transferable data, int action) {
-		System.out.println("[1======] exportDone action=" + action);
+		System.out.println("exportDone():: action=" + action);
 		if ((action & MOVE) == MOVE) {
 			JTree tree = (JTree) source;
 			DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
@@ -159,7 +164,7 @@ class TreeTransferHandler99 extends TransferHandler {
 		DefaultMutableTreeNode[] nodes;
 
 		public NodesTransfer22(DefaultMutableTreeNode[] nodes) {
-			System.out.println("make NodeTransfer");
+			System.out.println("create NodeTrasfer");
 			this.nodes = nodes;
 		}
 
