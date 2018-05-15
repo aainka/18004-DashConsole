@@ -12,11 +12,11 @@ import Platform.DashConsole.OV_Issue;
 
 public abstract class OI_TreeEncoder {
 
-	Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	public Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	abstract MutableTreeNode decodeToTree(String userObject);
+	public abstract MutableTreeNode decodeToTree(String userObject);
 
-	abstract Object encodeFreomTree(DefaultMutableTreeNode node);
+	public abstract String encodeFromTree(DefaultMutableTreeNode node);
 
 	public List<OV_Issue> listAsTree(List<OV_Issue> list, MutableTreeNode parent) {
 		for (int i = 0; i < parent.getChildCount(); i++) {
@@ -26,5 +26,7 @@ public abstract class OI_TreeEncoder {
 		}
 		return null;
 	}
+
+ 
 
 }
