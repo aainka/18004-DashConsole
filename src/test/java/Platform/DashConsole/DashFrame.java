@@ -2,7 +2,6 @@ package Platform.DashConsole;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.ScrollPane;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 
@@ -50,7 +49,7 @@ public class DashFrame extends JFrame {
 	}
 
 	public void build(Container container) {
-		
+
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Redmine");
 		DashTreeModel treeModel = new DashTreeModel(root);
 		DashTree tree = new DashTree();
@@ -89,7 +88,6 @@ public class DashFrame extends JFrame {
 
 	public static final void main(String[] args) {
 		// DataTreeModel treeModel = new StringTreeModel();
-
 		new DashFrame().init();
 	}
 }

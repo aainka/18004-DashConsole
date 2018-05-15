@@ -1,7 +1,6 @@
 package Platform.DashConsole;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -15,20 +14,17 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
- 
 
 public class ExcelUtil {
 
-	public static void save(List<OV_Issue> nlist, String string)   {
+	public static void save(List<OV_Issue> nlist, String string) {
 		Class clazz = OV_Issue.class;
 		// OV_Issue x = new OV_Issue();
 		// x.subject = "kim";
 		// keep order
 		String fname = "C:\\JaeyoungJeon\\RedmineManager\\SR120-NEW.xlsx";
-	//	FileInputStream inputStream = new FileInputStream(fname);
-	 	XSSFWorkbook workbook = new XSSFWorkbook();
-	//	Workbook workbook = new SXSSFWorkbook();
-		XSSFSheet sheet =   workbook.createSheet("Sheet1");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("Sheet1");
 
 		CellStyle cellStyle = workbook.createCellStyle();
 		CreationHelper createHelper = workbook.getCreationHelper();
@@ -64,7 +60,6 @@ public class ExcelUtil {
 					}
 					if (f.getType() == java.util.Date.class) {
 						java.util.Date vDate = (Date) f.get(obj);
-						System.out.println("DDate Conversion ==> " + vDate);
 						if (vDate != null) {
 							cell.setCellValue(vDate);
 							cell.setCellStyle(cellStyle);
@@ -77,7 +72,7 @@ public class ExcelUtil {
 			}
 		}
 		try {
-			FileOutputStream out = new FileOutputStream(new File("C:\\JaeyoungJeon\\RedmineManager\\SR120-NEW.xlsx"));
+			FileOutputStream out = new FileOutputStream(new File(fname));
 			workbook.write(out);
 			out.close();
 		} catch (IOException e1) {

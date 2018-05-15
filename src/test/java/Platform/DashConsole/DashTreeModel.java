@@ -20,20 +20,9 @@ import com.taskadapter.redmineapi.bean.SavedQuery;
 
 public class DashTreeModel extends DefaultTreeModel {
 
-
-
-
-
-	
-
-
-
 	public DashTreeModel(TreeNode arg0) {
 		super(arg0);
-		loading();
+		loading(this);
 	}
 	
-
-
-
 }
