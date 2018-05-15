@@ -26,6 +26,7 @@ public class DashTreeModel extends DefaultTreeModel {
 
 	HashMap<Integer, MutableTreeNode> map = new HashMap<Integer, MutableTreeNode>();
 
+	
 	private String url = "http://redmine.ericssonlg.com/redmine";
 	List<OV_Issue> issues = null;
 	List<OV_Issue> rest = new LinkedList<OV_Issue>();
