@@ -1,9 +1,13 @@
-package Platform.DashConsole;
+package Platform.util;
+
+import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
-public class StringNodeEncoder implements OI_TreeEncoder{
+import Platform.DashConsole.OV_Issue;
+
+public class StringNodeEncoder extends OI_TreeEncoder{
 
 	@Override
 	public MutableTreeNode decodeToTree(String userObject) {
@@ -15,5 +19,7 @@ public class StringNodeEncoder implements OI_TreeEncoder{
 	public Object encodeFreomTree(DefaultMutableTreeNode node) {
 		return node.getUserObject();
 	}
+	
+
 
 }
