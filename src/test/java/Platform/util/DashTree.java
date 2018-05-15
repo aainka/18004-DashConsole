@@ -1,4 +1,4 @@
-package Platform.DashConsole;
+package Platform.util;
 
 import javax.swing.DropMode;
 import javax.swing.JTree;

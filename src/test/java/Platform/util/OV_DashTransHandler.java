@@ -19,7 +19,7 @@ class OV_DashTransHandler extends TransferHandler {
 	DataFlavor[] flavors = new DataFlavor[1];
 	DefaultMutableTreeNode[] nodesToRemove;
 	OI_TreeEncoder treeEncoder = new StringNodeEncoder();
-	// Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	
 
 	public OV_DashTransHandler() {
 		try {

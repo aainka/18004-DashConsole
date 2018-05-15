@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import Platform.util.DashTree;
+
 public class DashFrame extends JFrame {
 
 	DashController controller = new DashController();
