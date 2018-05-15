@@ -35,6 +35,7 @@ public class DashTreeModel extends DefaultTreeModel {
 		super(arg0);
 		loading();
 	}
+	
 
 	public void loading() {
 		redmine = RedmineManagerFactory.createWithUserAuth(url, "ejaejeo", "ejaejeo", client);
