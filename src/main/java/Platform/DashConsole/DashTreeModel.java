@@ -44,8 +44,8 @@ public class DashTreeModel extends DefaultTreeModel  implements TreeModelListene
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 		System.out.println("INSERT.parent = "+node.getUserObject());
 		
-		DefaultMutableTreeNode node2 =(DefaultMutableTreeNode) arg0.getChildIndices();
-		System.out.println("INSERT.node ="+ node.getUserObject());
+//		DefaultMutableTreeNode node2 =(DefaultMutableTreeNode) arg0.getChildIndices();
+//		System.out.println("INSERT.node ="+ node.getUserObject());
 	}
 
 	@Override
