@@ -29,7 +29,7 @@ public class ExcelUtil {
 
 	// https://www.callicoder.com/java-read-excel-file-apache-poi/
 	//static String fname = "C:\\JaeyoungJeon\\RedmineManager\\SR120-NEW.xlsx";
-	static String fname = "‪C:\\tmp\\18004-DashConsole\\SR120-NEW.xlsx";
+	static String fname = "C:\\tmp\\SR120-NEW.xlsx";
 	public static void save(List<OV_Issue> nlist, String string) {
 		Class clazz = OV_Issue.class;
 		XSSFWorkbook workbook = new XSSFWorkbook();
