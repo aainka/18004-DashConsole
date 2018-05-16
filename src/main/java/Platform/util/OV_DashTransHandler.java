@@ -14,11 +14,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import Platform.DashConsole.OV_IssueEncoder;
+
 class OV_DashTransHandler extends TransferHandler {
 	DataFlavor nodesFlavor;
 	DataFlavor[] flavors = new DataFlavor[1];
 	DefaultMutableTreeNode[] nodesToRemove;
-	OI_TreeEncoder treeEncoder = new StringNodeEncoder();
+	OI_TreeEncoder treeEncoder = new OV_IssueEncoder();
 	
 
 	public OV_DashTransHandler() {
@@ -71,14 +73,14 @@ class OV_DashTransHandler extends TransferHandler {
 			DefaultMutableTreeNode[] nodes = copies.toArray(new DefaultMutableTreeNode[copies.size()]);
 
 			nodesToRemove = toRemove.toArray(new DefaultMutableTreeNode[toRemove.size()]);
-			return new NodesTransfer22(nodes); // ----->
+			return new NodesTransfer(nodes); // ----->
 		}
 		return null;
 	}
 
 	public DefaultMutableTreeNode copy(DefaultMutableTreeNode node) {
 		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
-		newNode.setUserObject(treeEncoder.encodeFreomTree(node)); // User Object change to String for TreeInfo;
+		newNode.setUserObject("["+treeEncoder.encodeFromTree(node)+"]"); // User Object change to String for TreeInfo;
 		return newNode;
 	}
 
@@ -105,18 +107,18 @@ class OV_DashTransHandler extends TransferHandler {
 	}
 
 	public boolean importData(TransferHandler.TransferSupport support) {
-		System.out.println("import----" + support);
+		
 		Transferable t2 = support.getTransferable();
-		try {
-			System.out.println("getUserDropAction::----" + t2.getTransferData(nodesFlavor));
-		} catch (UnsupportedFlavorException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			System.out.println("getUserDropAction::----" + t2.getTransferData(nodesFlavor));
+//		} catch (UnsupportedFlavorException | IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		if (!canImport(support)) {
 			return false;
 		}
-
+		System.out.println("ImportData after canImport." + support);
 		// Extract transfer data.
 		DefaultMutableTreeNode[] nodes = null;
 		try {
@@ -160,11 +162,11 @@ class OV_DashTransHandler extends TransferHandler {
 		}
 	}
 
-	public class NodesTransfer22 implements Transferable {
+	public class NodesTransfer implements Transferable {
 		DefaultMutableTreeNode[] nodes;
 
-		public NodesTransfer22(DefaultMutableTreeNode[] nodes) {
-			System.out.println("create NodeTrasfer");
+		public NodesTransfer(DefaultMutableTreeNode[] nodes) {
+			System.out.println("create NodeTrasfer \n"+nodes[0].getUserObject());
 			this.nodes = nodes;
 		}
 

@@ -17,6 +17,8 @@ import com.taskadapter.redmineapi.RedmineManagerFactory;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.SavedQuery;
 
+import Platform.util.ExcelUtil;
+
 public class OV_DashDao {
 	final ClientConnectionManager connectionManager = RedmineManagerFactory.createDefaultConnectionManager();
 	final HttpClient client = RedmineManagerFactory.getNewHttpClient("aa", connectionManager);

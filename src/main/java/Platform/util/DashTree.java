@@ -2,9 +2,15 @@ package Platform.util;
 
 import javax.swing.DropMode;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 public class DashTree extends JTree {
+
+	OV_DashTransHandler transHandler = new OV_DashTransHandler();
 
 	public DashTree() {
 		super();
@@ -14,6 +20,9 @@ public class DashTree extends JTree {
 		this.setDragEnabled(true);
 
 		this.setDropMode(DropMode.ON_OR_INSERT);
-		this.setTransferHandler(new OV_DashTransHandler());
+		this.setTransferHandler(transHandler);
+	
 	}
+
+	
 }

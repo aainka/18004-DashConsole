@@ -12,8 +12,8 @@ public class StringNodeEncoder extends OI_TreeEncoder {
 	}
 
 	@Override
-	public Object encodeFreomTree(DefaultMutableTreeNode node) {
-		return node.getUserObject();
+	public String encodeFromTree(DefaultMutableTreeNode node) {
+		return (String) node.getUserObject();
 	}
 
 }
