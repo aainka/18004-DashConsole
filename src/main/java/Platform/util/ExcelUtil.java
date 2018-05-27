@@ -1,26 +1,27 @@
 package Platform.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Platform.DashConsole.OV_Issue;
@@ -92,23 +93,76 @@ public class ExcelUtil {
 
 	////////////////////////
 
-	public void read() {
+	public static List<OV_Issue> read() {
+		String fname = "C:\\tmp\\2018ALL.xlsx";
+		List<OV_Issue> issues = new LinkedList<OV_Issue>();
 		DataFormatter dataFormatter = new DataFormatter();
 		Workbook workbook;
+		Field[] vfields  = new Field[100];
 		try {
-			workbook = WorkbookFactory.create(new File(fname));
+		//	workbook = WorkbookFactory.create(new File(fname));
+			FileInputStream inp = new FileInputStream(fname);
+			workbook = WorkbookFactory.create(inp);
 			Sheet sheet = workbook.getSheetAt(0);
-			for (Row row : sheet) {
-				for (Cell cell : row) {
-					String cellValue = dataFormatter.formatCellValue(cell);
-					System.out.print(cellValue + "\t");
+			// read fistline for schema
+			Row  row0 = sheet.getRow(0);
+			for (Cell cell : row0) {
+				String name = cell.getStringCellValue();
+				Field f;
+				try {
+					f = OV_Issue.class.getField(name);
+					vfields[cell.getColumnIndex()] = f;
+				} catch (NoSuchFieldException | SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				System.out.println();
+			
+			}
+		
+			for ( Row row : sheet) {
+				if ( row.getRowNum() == 0 ) continue;
+				
+				OV_Issue x = new OV_Issue();
+				for (Cell cell : row) {
+					CellType type = cell.getCellTypeEnum();
+					Field f = vfields[cell.getColumnIndex()];
+					try {
+						switch (type.getCode()) {
+						case 0 : // numeric and date 
+							if ( f.getType() == int.class) {
+								int v0 = (int) cell.getNumericCellValue();
+								f.set(x, v0);
+							}
+							if ( f.getType() == Date.class) {
+								Date v0 = cell.getDateCellValue();
+								f.set(x, v0);
+							}
+							break;
+						case 1 : // String
+							String value = cell.getStringCellValue();
+							f.set(x, value);
+							break;
+ 					case 3 : // BLANK
+ 							break;
+						default : 
+							System.out.println("[ERROR] type = "+type+" name="+f.getName());
+						}
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				//	vfields[cell.getColumnIndex()].set(x, value);
+					
+//					String cellValue = dataFormatter.formatCellValue(cell);
+//					System.out.print(cellValue + "\t");
+				}
+				issues.add(x);
 			}
 		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return issues;
 	
 	}
 

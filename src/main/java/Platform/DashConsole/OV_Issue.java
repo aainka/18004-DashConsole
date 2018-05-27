@@ -10,7 +10,7 @@ public class OV_Issue {
 	public String status;
 	public String tracker;
 	public String subject;
-	public String asignee;
+	public String assignee;
 	public String author;
 	public int estimatedHours;
 	public int parent_id;
@@ -22,7 +22,7 @@ public class OV_Issue {
 	public String toString() {
 		String s = new String(""+id);
 		s += ": "+subject;
-		s += ": "+asignee;
+		s += ": "+assignee;
 		s += ": "+doneRatio;
 		return s;
 	}
@@ -42,7 +42,7 @@ public class OV_Issue {
 		this.status = src.getStatusName();
 		this.tracker = src.getTracker().getName();
 		this.subject = src.getSubject();
-		this.asignee = src.getAssigneeName();
+		this.assignee = src.getAssigneeName();
 		this.author = src.getAuthorName();
 		this.doneRatio = src.getDoneRatio();
 		if (src.getParentId() != null) {

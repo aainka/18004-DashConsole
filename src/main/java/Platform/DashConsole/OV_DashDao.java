@@ -15,6 +15,7 @@ import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.RedmineManagerFactory;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.SavedQuery;
 
 import Platform.util.ExcelUtil;
@@ -29,12 +30,28 @@ public class OV_DashDao {
 	private List<OV_Issue> rest = new LinkedList<OV_Issue>();
 	private List<OV_Issue> tmp = new LinkedList<OV_Issue>();
 	HashMap<Integer, MutableTreeNode> map = new HashMap<Integer, MutableTreeNode>();
+	
+	public void test() {
+		redmine = RedmineManagerFactory.createWithUserAuth(url, "ejaejeo", "ejaejeo", client);
+		try {
+			List<Issue> list = redmine.getIssueManager().getIssues("vepg_si-2018", 167);
+			System.out.println("size=" + list.size());
+			issues = OV_Issue.toList(list);
+			ExcelUtil.save(issues, "filename");
+		} catch (RedmineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	// 	List<Issue> list = redmine.getIssueManager().getIssues("vepg_si-2018", 147);
+	}
 
+	// 167: 2018.all
 	public void loading(DefaultTreeModel treeModel) {
 		redmine = RedmineManagerFactory.createWithUserAuth(url, "ejaejeo", "ejaejeo", client);
 		List<SavedQuery> savedQueries;
 		try {
-			List<Issue> list = redmine.getIssueManager().getIssues("vepg_si-2018", 147);
+			List<Issue> list = redmine.getIssueManager().getIssues("vepg_si-2018", 167);
 			System.out.println("size=" + list.size());
 			issues = OV_Issue.toList(list);
 			ExcelUtil.save(issues, "filename");
@@ -72,5 +89,8 @@ public class OV_DashDao {
 			System.out.println("issue = " + issue);
 		}
 
+	}
+	static public void main(String[] arg) {
+		new OV_DashDao().test();
 	}
 }
