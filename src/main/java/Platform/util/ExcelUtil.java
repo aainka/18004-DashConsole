@@ -12,16 +12,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Platform.DashConsole.OV_Issue;
@@ -29,50 +32,80 @@ import Platform.DashConsole.OV_Issue;
 public class ExcelUtil {
 
 	// https://www.callicoder.com/java-read-excel-file-apache-poi/
-	//static String fname = "C:\\JaeyoungJeon\\RedmineManager\\SR120-NEW.xlsx";
+	// static String fname = "C:\\JaeyoungJeon\\RedmineManager\\SR120-NEW.xlsx";
 	static String fname = "C:\\tmp\\SR120-NEW.xlsx";
+	static CellStyle cellStyleDate, cellStyleHref;
+	static XSSFWorkbook workbook;
+	static Sheet sheet;
+
+	public void init() {
+		workbook = new XSSFWorkbook();
+		sheet = workbook.createSheet("Sheet1");
+		{
+			cellStyleDate = workbook.createCellStyle();
+			CreationHelper createHelper = workbook.getCreationHelper();
+			short dateFormat = createHelper.createDataFormat().getFormat("yyyy-MM-dd");
+			cellStyleDate.setDataFormat(dateFormat);
+		}
+		{
+			cellStyleHref = workbook.createCellStyle();
+			XSSFFont hlink_font = workbook.createFont();
+			hlink_font.setUnderline(XSSFFont.U_SINGLE);
+			hlink_font.setColor(IndexedColors.BLUE.getIndex());
+			cellStyleHref.setFont(hlink_font);
+		}
+	}
+
 	public static void save(List<OV_Issue> nlist, String string) {
 		Class clazz = OV_Issue.class;
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		Sheet sheet = workbook.createSheet("Sheet1");
-
-		CellStyle cellStyle = workbook.createCellStyle();
-		CreationHelper createHelper = workbook.getCreationHelper();
-		short dateFormat = createHelper.createDataFormat().getFormat("yyyy-MM-dd");
-		cellStyle.setDataFormat(dateFormat);
-
-		/*
-		 * Head Row Creation
-		 */
 		int colIndex = 0;
 		int rowIndex = 0;
+
+		/*
+		 * Header Writing
+		 */
 		{
 			Row row = sheet.createRow(rowIndex++);
-			for (Field f : clazz.getDeclaredFields()) {
+			for (Field f : clazz.getDeclaredFields()) { // attribute name
 				Cell cell = row.createCell(colIndex++);
 				cell.setCellValue(f.getName());
 			}
 		}
+
+		/*
+		 * Body Writing
+		 */
 		for (OV_Issue issue : nlist) {
 			Row row = sheet.createRow(rowIndex++);
 			colIndex = 0;
 			Object obj = issue;
-			for (Field f : clazz.getDeclaredFields()) {
+			for (Field f : clazz.getDeclaredFields()) { // attribute name
 				Cell cell = row.createCell(colIndex++);
 				try {
-					if (f.getType() == int.class) {
-						System.out.println(f.getName() + "=" + f.getInt(obj));
+					if (f.getName().equals("id")) {
+						int id = f.getInt(obj);
+						{
+							org.apache.poi.ss.usermodel.Hyperlink href = workbook.getCreationHelper()
+									.createHyperlink(HyperlinkType.URL);
+							href.setAddress("http://redmine.ericssonlg.com/redmine/issues/" + id);
+							cell.setHyperlink(href);
+						}
+						cell.setCellValue(id);
+						cell.setCellStyle(cellStyleHref);
+
+						continue;
+					}
+					if (f.getType() == int.class || f.getType() == Integer.class) {
 						cell.setCellValue(f.getInt(obj));
 					}
 					if (f.getType() == String.class) {
-						System.out.println(f.getName() + "=" + (String) f.get(obj));
 						cell.setCellValue((String) f.get(obj));
 					}
 					if (f.getType() == java.util.Date.class) {
 						java.util.Date vDate = (Date) f.get(obj);
 						if (vDate != null) {
 							cell.setCellValue(vDate);
-							cell.setCellStyle(cellStyle);
+							cell.setCellStyle(cellStyleDate);
 						}
 					}
 				} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -98,14 +131,14 @@ public class ExcelUtil {
 		List<OV_Issue> issues = new LinkedList<OV_Issue>();
 		DataFormatter dataFormatter = new DataFormatter();
 		Workbook workbook;
-		Field[] vfields  = new Field[100];
+		Field[] vfields = new Field[100];
 		try {
-		//	workbook = WorkbookFactory.create(new File(fname));
+			// workbook = WorkbookFactory.create(new File(fname));
 			FileInputStream inp = new FileInputStream(fname);
 			workbook = WorkbookFactory.create(inp);
 			Sheet sheet = workbook.getSheetAt(0);
 			// read fistline for schema
-			Row  row0 = sheet.getRow(0);
+			Row row0 = sheet.getRow(0);
 			for (Cell cell : row0) {
 				String name = cell.getStringCellValue();
 				Field f;
@@ -116,45 +149,46 @@ public class ExcelUtil {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			
+
 			}
-		
-			for ( Row row : sheet) {
-				if ( row.getRowNum() == 0 ) continue;
-				
+
+			for (Row row : sheet) {
+				if (row.getRowNum() == 0)
+					continue;
+
 				OV_Issue x = new OV_Issue();
 				for (Cell cell : row) {
 					CellType type = cell.getCellTypeEnum();
 					Field f = vfields[cell.getColumnIndex()];
 					try {
 						switch (type.getCode()) {
-						case 0 : // numeric and date 
-							if ( f.getType() == int.class) {
+						case 0: // numeric and date
+							if (f.getType() == int.class) {
 								int v0 = (int) cell.getNumericCellValue();
 								f.set(x, v0);
 							}
-							if ( f.getType() == Date.class) {
+							if (f.getType() == Date.class) {
 								Date v0 = cell.getDateCellValue();
 								f.set(x, v0);
 							}
 							break;
-						case 1 : // String
+						case 1: // String
 							String value = cell.getStringCellValue();
 							f.set(x, value);
 							break;
- 					case 3 : // BLANK
- 							break;
-						default : 
-							System.out.println("[ERROR] type = "+type+" name="+f.getName());
+						case 3: // BLANK
+							break;
+						default:
+							System.out.println("[ERROR] type = " + type + " name=" + f.getName());
 						}
 					} catch (IllegalArgumentException | IllegalAccessException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				//	vfields[cell.getColumnIndex()].set(x, value);
-					
-//					String cellValue = dataFormatter.formatCellValue(cell);
-//					System.out.print(cellValue + "\t");
+					// vfields[cell.getColumnIndex()].set(x, value);
+
+					// String cellValue = dataFormatter.formatCellValue(cell);
+					// System.out.print(cellValue + "\t");
 				}
 				issues.add(x);
 			}
@@ -163,10 +197,10 @@ public class ExcelUtil {
 			e.printStackTrace();
 		}
 		return issues;
-	
+
 	}
 
-//	public static final String SAMPLE_XLSX_FILE_PATH = "./sample-xlsx-file.xlsx";
+	// public static final String SAMPLE_XLSX_FILE_PATH = "./sample-xlsx-file.xlsx";
 
 	public void example() throws IOException, InvalidFormatException {
 
@@ -259,7 +293,7 @@ public class ExcelUtil {
 		List<OV_Issue> nList = new ArrayList<OV_Issue>();
 		// 일단 Open Value Print
 		// class화
-		//new ExcelUtil().save(nList, "");
+		// new ExcelUtil().save(nList, "");
 		new ExcelUtil().read();
 	}
 

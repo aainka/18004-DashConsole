@@ -5,25 +5,31 @@ import java.util.List;
 
 import com.taskadapter.redmineapi.bean.Issue;
 
+import lombok.Data;
+
+@Data
+
 public class OV_Issue {
-	public int id;
-	public String status;
-	public String tracker;
-	public String subject;
-	public String assignee;
-	public String author;
-	public int estimatedHours;
-	public int parent_id;
-	public java.util.Date created;
-	public java.util.Date dueDate;
-	public java.util.Date closed;
-	public Integer doneRatio;
-	
+	private int id;
+	private String status;
+	private String tracker;
+	private String subject;
+	private String assignee;
+	private String author;
+	private int estimatedHours;
+	private int parent_id;
+	private java.util.Date created;
+	private java.util.Date dueDate;
+	private java.util.Date closed;
+	private int doneRatio;
+	private String targetVersion;
+	private int spentHours;
+
 	public String toString() {
-		String s = new String(""+id);
-		s += ": "+subject;
-		s += ": "+assignee;
-		s += ": "+doneRatio;
+		String s = new String("" + id);
+		s += ": " + subject;
+		s += ": " + assignee;
+		s += ": " + doneRatio;
 		return s;
 	}
 
@@ -45,6 +51,13 @@ public class OV_Issue {
 		this.assignee = src.getAssigneeName();
 		this.author = src.getAuthorName();
 		this.doneRatio = src.getDoneRatio();
+		if (src.getSpentHours() != null) {
+			this.spentHours = src.getSpentHours().intValue();
+		}
+		if (src.getTargetVersion() != null) {
+			this.targetVersion = src.getTargetVersion().getName();
+		}
+
 		if (src.getParentId() != null) {
 			this.parent_id = src.getParentId().intValue();
 		}

@@ -39,7 +39,7 @@ public class DashController implements MouseListener{
 		DefaultMutableTreeNode toNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		System.out.println("Clicked "+toNode.getUserObject());
 		OV_Issue issue = (OV_Issue) toNode.getUserObject();
-		String sUrl = "http://redmine.ericssonlg.com/redmine/issues/"+issue.id;
+		String sUrl = "http://redmine.ericssonlg.com/redmine/issues/"+issue.getId();
 		
 	    try {
 			Desktop.getDesktop().browse(new URI(sUrl));

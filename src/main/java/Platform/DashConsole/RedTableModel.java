@@ -21,21 +21,27 @@ public class RedTableModel implements TableModel {
 	final ClientConnectionManager connectionManager = RedmineManagerFactory.createDefaultConnectionManager();
 	final HttpClient client = RedmineManagerFactory.getNewHttpClient("aa", connectionManager);
 	private String url = "http://redmine.ericssonlg.com/redmine";
-	public RedmineManager redmine;
+	public RedmineManager redmine = RedmineManagerFactory.createWithUserAuth(url, "ejaejeo", "ejaejeo", client);
 
 	private List<OV_Issue> issues = null;
 	private String[] coldef = new String[] { "id", "subject", "assignee", "tracker" };
 
 	public void test() {
-
-		redmine = RedmineManagerFactory.createWithUserAuth(url, "ejaejeo", "ejaejeo", client);
-		//			List<Issue> list = redmine.getIssueManager().getIssues("vepg_si-2018", 167);
-//			System.out.println("size=" + list.size());
-//			issues = OV_Issue.toList(list);
-//			ExcelUtil.save(issues, "2018ALL");
-		issues = ExcelUtil.read();
-
+		try {
+			loadRest();
+		} catch (RedmineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// issues = ExcelUtil.read();
 		// List<Issue> list = redmine.getIssueManager().getIssues("vepg_si-2018", 147);
+	}
+
+	public void loadRest() throws RedmineException {
+		List<Issue> list = redmine.getIssueManager().getIssues("vepg_si-2018", 167);
+		System.out.println("size=" + list.size());
+		issues = OV_Issue.toList(list);
+		ExcelUtil.save(issues, "2018ALL");
 	}
 
 	@Override
@@ -101,6 +107,10 @@ public class RedTableModel implements TableModel {
 	public void setValueAt(Object arg0, int arg1, int arg2) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public static void main(String[] args) {
+		new RedTableModel().test();
 	}
 
 }

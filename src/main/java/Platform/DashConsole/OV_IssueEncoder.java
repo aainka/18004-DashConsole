@@ -25,17 +25,17 @@ public class OV_IssueEncoder extends OI_TreeEncoder {
 		System.out.println("decodeNode. =" + list.size());
 		OV_Issue task = list.get(0);
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(list.get(0));
-		if (task.id > 0) {
-			map.put(task.id, top);
+		if (task.getId() > 0) {
+			map.put(task.getId(), top);
 		}
 		for (int i = 1; i < list.size(); i++) {
 			task = list.get(i);
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode(task);
-			if (task.id > 0) {
-				map.put(task.id, node);
+			if (task.getId() > 0) {
+				map.put(task.getId(), node);
 			}
-			if (task.parent_id > 0) {
-				DefaultMutableTreeNode pNode = map.get(task.parent_id);
+			if (task.getParent_id() > 0) {
+				DefaultMutableTreeNode pNode = map.get(task.getParent_id());
 				if (pNode != null) {
 					pNode.add(node);
 					continue;
