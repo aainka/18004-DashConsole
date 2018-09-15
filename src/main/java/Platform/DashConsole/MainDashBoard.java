@@ -20,6 +20,7 @@ import com.taskadapter.redmineapi.RedmineManagerFactory;
 import com.taskadapter.redmineapi.TimeEntryManager;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.IssueStatus;
+import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.SavedQuery;
 import com.taskadapter.redmineapi.bean.TimeEntry;
 import com.taskadapter.redmineapi.internal.ResultsWrapper;
@@ -65,6 +66,28 @@ public class MainDashBoard {
 		}
 	}
 
+	public void test21() {
+		login();
+		try {
+			List<Project> list = redmine.getProjectManager().getProjects();
+			for ( Project project : list) {
+				System.out.println("list.project = "+project.getIdentifier());
+				if ( project.getIdentifier().indexOf("190")==0) {
+					System.out.println("change-->"+project.getId());
+					project.setName("NSA_R100");
+					 
+					project.setIdentifier("NSA_R100");
+					
+					
+					redmine.getProjectManager().update(project);
+				}
+			}
+		} catch (RedmineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void test2() {
 		List<OV_Issue> nlist = (List<OV_Issue>) new ExcelObjectReader().read(OV_Issue.class, null,
 				outDir + "SR120-NEW.xlsx");
@@ -78,7 +101,7 @@ public class MainDashBoard {
 		/**
 		 * loading redmine configuration
 		 */
-		String filename = outDir + "RedmineManager\\Info.xlsx";
+		String filename = outDir + "RedmineManager\\Config\\Info.xlsx";
 		List<OV_QueryInfo> queryList = (List<OV_QueryInfo>) new ExcelObjectReader().read(OV_QueryInfo.class, "Query",
 				filename);
 
@@ -106,6 +129,13 @@ public class MainDashBoard {
 	public void test4() {
 
 		login();
+		
+		String filename = outDir + "RedmineManager\\Config\\Info.xlsx";
+		OV_User.load(filename);
+		
+		IssueController issueController = new IssueController();
+		issueController.setRedmine(redmine);
+		issueController.dump(19734);
 
 		TimeEntryManager timeEntryManager = redmine.getTimeEntryManager();
 		List<TimeEntry> totalTimeEntry = new ArrayList<TimeEntry>();
@@ -122,17 +152,18 @@ public class MainDashBoard {
 				System.out.println("* time.offset=" + offset);
 				System.out.println("  time.result=" + resultList.getResultsNumber());
 				System.out.println("  time.max=" + resultList.getTotalFoundOnServer());
-				System.out.println("  time.list=" + totalTimeEntry.size()+"/"+totalFound);
+				System.out.println("  time.list=" + totalTimeEntry.size() + "/" + totalFound);
 				totalFound = resultList.getTotalFoundOnServer();
-			//	OV_TimeEntry.transform(resultList.getResults()); // for test.
+				// OV_TimeEntry.transform(resultList.getResults()); // for test.
 				totalTimeEntry.addAll(resultList.getResults());
 				// totalFound = 200;
 			}
-			
- 			List<OV_TimeEntry> list = OV_TimeEntry.transform(totalTimeEntry);
- 			excelObjectWriter.write(list, "logTime",
- 					outDir + "RedmineManager\\logTime("  +list.size()+ ")_" + LogUtil.getToday() + ".xlsx");
-System.out.println("EEE....");;
+
+			List<OV_TimeEntry> list = OV_TimeEntry.transform(totalTimeEntry);
+			excelObjectWriter.write(list, "logTime",
+					outDir + "RedmineManager\\logTime(" + list.size() + ")_" + LogUtil.getToday() + ".xlsx");
+			System.out.println("EEE....");
+			;
 		} catch (RedmineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -148,6 +179,7 @@ System.out.println("EEE....");;
 		List<IssueStatus> statusList = mgr.getStatuses();
 		for (IssueStatus s : statusList) {
 			System.out.println("StatusList name=" + s.getName() + " id=" + s.getId());
+		 
 		}
 
 		MapVersion mapVersion = new MapVersion(redmine);
