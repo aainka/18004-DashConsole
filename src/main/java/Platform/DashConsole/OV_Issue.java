@@ -43,31 +43,31 @@ public class OV_Issue {
 		return nList;
 	}
 
-	private void update(Issue src) {
-		this.id = src.getId();
-		this.status = src.getStatusName();
-		this.tracker = src.getTracker().getName();
-		this.subject = src.getSubject();
-		this.assignee = src.getAssigneeName();
-		this.author = src.getAuthorName();
-		this.doneRatio = src.getDoneRatio();
-		if (src.getSpentHours() != null) {
-			this.spentHours = src.getSpentHours().intValue();
-		}
-		if (src.getTargetVersion() != null) {
-			this.targetVersion = src.getTargetVersion().getName();
+	private void update(Issue orgIssue) {
+		this.id = orgIssue.getId();
+		this.status = orgIssue.getStatusName();
+		this.tracker = orgIssue.getTracker().getName();
+		this.subject = orgIssue.getSubject();
+		this.assignee = orgIssue.getAssigneeName();
+		this.author = orgIssue.getAuthorName();
+		this.doneRatio = orgIssue.getDoneRatio();
+
+		if (orgIssue.getTargetVersion() != null) {
+			this.targetVersion = orgIssue.getTargetVersion().getName();
 		}
 
-		if (src.getParentId() != null) {
-			this.parent_id = src.getParentId().intValue();
+		if (orgIssue.getParentId() != null) {
+			this.parent_id = orgIssue.getParentId().intValue();
 		}
-		if (src.getEstimatedHours() != null) {
-			this.estimatedHours = Math.round(src.getEstimatedHours());
+		if (orgIssue.getEstimatedHours() != null) {
+			this.estimatedHours = Math.round(orgIssue.getEstimatedHours());
 		}
-		this.dueDate = src.getDueDate();
-		this.created = src.getCreatedOn();
-		this.closed = src.getClosedOn();
-		// System.out.println("subject = " + src.getTracker().getId());
-		// src.getParentId()
+	 
+		if (orgIssue.getSpentHours() != null) {
+			this.spentHours = Math.round(orgIssue.getSpentHours());
+		}
+		this.dueDate = orgIssue.getDueDate();
+		this.created = orgIssue.getCreatedOn();
+		this.closed = orgIssue.getClosedOn();
 	}
 }

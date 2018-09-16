@@ -160,9 +160,11 @@ public class MainDashBoard {
 			}
 
 			List<OV_TimeEntry> list = OV_TimeEntry.transform(totalTimeEntry);
+		 
 			excelObjectWriter.write(list, "logTime",
 					outDir + "RedmineManager\\logTime(" + list.size() + ")_" + LogUtil.getToday() + ".xlsx");
-			System.out.println("EEE....");
+			
+			System.out.println("LogTime process ending.");
 			;
 		} catch (RedmineException e) {
 			// TODO Auto-generated catch block

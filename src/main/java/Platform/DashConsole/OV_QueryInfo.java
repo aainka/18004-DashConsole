@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 
 public class OV_QueryInfo {
-	public int id;
-	public String projectId;
-	public int queryNumber;
-	public String memo;
-	public String outfile_sheetname;
-	public transient List<OV_Issue> issues;
+	private int id;
+	private String projectId;
+	private int queryNumber;
+	private String memo;
+	private String outfile_sheetname;
+	private transient List<OV_Issue> issues;
 }

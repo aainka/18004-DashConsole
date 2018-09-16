@@ -1,6 +1,7 @@
 package Platform.DashConsole;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import lombok.Data;
 public class OV_TimeEntry {
 
 	private float hours;
+	private int weeknum;
 	private String userName;
 	private int issueId;
 	private Date createdOn;
@@ -33,13 +35,19 @@ public class OV_TimeEntry {
 		hours = s.getHours();
 		userName = s.getUserName();
 		try {
-		issueId = s.getIssueId();
-		} catch ( Exception e) {
+			issueId = s.getIssueId();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		comment = s.getComment();
 		createdOn = s.getCreatedOn();
-		spentOn = s.getSpentOn();
 		projectName = s.getProjectName();
+		{
+			spentOn = s.getSpentOn();
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(spentOn.getTime());
+			weeknum = cal.get(Calendar.WEEK_OF_YEAR);
+		}
 	}
+
 }
