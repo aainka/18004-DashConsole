@@ -25,7 +25,11 @@ import com.taskadapter.redmineapi.bean.TimeEntry;
 import com.taskadapter.redmineapi.bean.Version;
 import com.taskadapter.redmineapi.internal.ResultsWrapper;
 
+import lombok.extern.java.Log;
+
+@Log
 public class MainDashBoard {
+	private LogConfig x = new LogConfig();
 	final ClientConnectionManager connectionManager = RedmineManagerFactory.createDefaultConnectionManager();
 	final HttpClient client = RedmineManagerFactory.getNewHttpClient("aa", connectionManager);
 	public RedmineManager redmine;
@@ -33,10 +37,11 @@ public class MainDashBoard {
 	private String url = "http://redmine.ericssonlg.com/redmine";
 	private String outDir = "C://tmp//";
 	private ExcelObjectWriter excelObjectWriter = null;
-	
-	private VersionCache versionCache = new VersionCache(redmine);
+
+	private VersionCache versionCache = null;
 
 	public void login() {
+
 		redmine = RedmineManagerFactory.createWithUserAuth(url, "ejaejeo", "ejaejeo", client);
 		excelObjectWriter = new ExcelObjectWriter() {
 			@Override
@@ -53,6 +58,18 @@ public class MainDashBoard {
 				return 0;
 			}
 		};
+	}
+
+	public void initInfo() {
+		String infopath = outDir + "RedmineManager\\Config\\Info.xlsx";
+		versionCache = VersionCache.builder()
+				.redmine(redmine)
+				.infopath(infopath)
+				.build();
+		log.info("init Cache ###############");
+
+	
+
 	}
 
 	public void test() {
@@ -97,6 +114,7 @@ public class MainDashBoard {
 	}
 
 	public void test3() {
+
 		login();
 
 		/**
@@ -130,9 +148,6 @@ public class MainDashBoard {
 	public void test4() {
 
 		login();
-
-		String filename = outDir + "RedmineManager\\Config\\Info.xlsx";
-		OV_User.load(filename);
 
 		IssueController issueController = new IssueController();
 		issueController.setRedmine(redmine);
@@ -174,6 +189,11 @@ public class MainDashBoard {
 	}
 
 	public void updateVersion() throws RedmineException {
+		log.setLevel(java.util.logging.Level.ALL);
+		log.setUseParentHandlers(false);
+
+		log.info("update version ###############");
+		initInfo();
 		login();
 		IssueManager mgr = redmine.getIssueManager();
 //		/**
@@ -190,27 +210,27 @@ public class MainDashBoard {
 //		// redmine.getProjectManager().getProjects(){
 //
 //		System.out.println("update....");
-		
-	//	int projectID = 
-		 
-		  versionCache.setRedmine(redmine);
-		  versionCache.init();
-		    versionCache.initByProjectId(81);
-	    List<Version> versions = redmine.getProjectManager().getVersions(81);
-	    for ( Version va : versions) {
-	    	System.out.println(va);
-	    }
-	  
+
+		// int projectID =
+
+		versionCache.setRedmine(redmine);
+		versionCache.init();
+		versionCache.initByProjectId(81);
+		List<Version> versions = redmine.getProjectManager().getVersions(81);
+		for (Version va : versions) {
+			System.out.println(va);
+		}
+
 		Issue issue = mgr.getIssueById(34563);
 		Version version = issue.getTargetVersion();
-		System.out.println("Project = "+issue.getProjectId());
-		System.out.println("Version = "+versionCache.get("SR999"));
-		
+		System.out.println("Project = " + issue.getProjectId());
+		System.out.println("Version = " + versionCache.get("SR999"));
+
 		issue.setTargetVersion(versionCache.get("SR999"));
-		mgr.update(issue);
-		
+		// mgr.update(issue);
+
 // Version [id=182, name=SR999]
-	//	Version [id=201, name=SR120]
+		// Version [id=201, name=SR120]
 //		issue.setStatusId(2);
 //		System.out.println("--- id=" + issue.getStatusId());
 //		issue.setStatusName("Closed");
@@ -221,14 +241,14 @@ public class MainDashBoard {
 	}
 
 	public static void main(String[] args) {
-		try {
-			new MainDashBoard().updateVersion();
-		} catch (RedmineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// new MainDashBoard().test3();
-	//	new MainDashBoard().test4();
+//		try {
+//			new MainDashBoard().updateVersion();
+//		} catch (RedmineException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		new MainDashBoard().test3();
+		new MainDashBoard().test4();
 //		try {
 //			new MainDashBoard().updateVersion();
 //		} catch (RedmineException e) {

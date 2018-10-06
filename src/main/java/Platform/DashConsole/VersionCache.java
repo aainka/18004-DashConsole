@@ -8,22 +8,32 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Version;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.extern.java.Log;
 
 @Data
+@Builder
+@Log
 public class VersionCache extends LinkedList<Version> {
 
 	private RedmineManager redmine;
+	private String infopath;
 
-	public VersionCache(RedmineManager redmine) {
+	public VersionCache(RedmineManager redmine, String infopath) {
 		this.redmine = redmine;
+		this.infopath = infopath;
+		log.info("User/ Project/ Loading");
+		OV_UserInfo.load(infopath);
+		OV_ProjectInfo.load(infopath);
 	}
 
 	public void init() {
 		try {
+
 			List<Project> projects = redmine.getProjectManager().getProjects();
-			for ( Project project : projects) {
-				System.out.println("Project = "+project);
+			for (Project project : projects) {
+				System.out.println("Project = " + project);
 			}
 		} catch (RedmineException e) {
 			// TODO Auto-generated catch block
@@ -45,7 +55,7 @@ public class VersionCache extends LinkedList<Version> {
 
 	public Version get(String versionName) {
 		for (Version v : this) {
-			System.out.println(" list.in " + v.getName());
+			// System.out.println(" list.in " + v.getName());
 			if (v.getName().equals(versionName)) {
 				return v;
 			}
