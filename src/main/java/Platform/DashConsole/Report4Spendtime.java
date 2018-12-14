@@ -58,6 +58,29 @@ public class Report4Spendtime extends MainDashBoard {
 		// *******************************
 
 		Collections.sort(listLogtime, new Ascending2());
+	//	Map<String, List<OV_TimeEntry>> map = new HashMap<String, List<OV_TimeEntry>>();
+		
+		TableMap<OV_TimeEntry> tbl = new TableMap<OV_TimeEntry>();
+		tbl.build("UserName", "WeekNum");
+		for (OV_TimeEntry te : listLogtime) {
+			tbl.put(te.getUserName(), "" + te.getWeeknum(), te);
+		}
+		System.out.println(tbl.getRowKeys());
+		System.out.println(tbl.getColumnKeys());
+		
+		int sum = 0;
+
+		for (String rowKey : tbl.getRowKeys()) {
+			for (String colKey : tbl.getColumnKeys()) {
+				List<OV_TimeEntry> list = tbl.get(rowKey, colKey);
+				int size = 0;
+				if ( list != null) {
+					size = list.size();
+				}
+				sum += size;
+				System.out.println(rowKey + ", " + colKey + " "+ sum);
+			}
+		}
 
 		File fp = new File("C:/tmp/ReportSpendtime.html");
 		try {
@@ -88,7 +111,6 @@ public class Report4Spendtime extends MainDashBoard {
 			e1.printStackTrace();
 		}
 
-	
 	}
 
 	private class Ascending2 implements Comparator<OV_TimeEntry> {
@@ -96,14 +118,14 @@ public class Report4Spendtime extends MainDashBoard {
 		@Override
 		public int compare(OV_TimeEntry arg0, OV_TimeEntry arg1) {
 			int v = arg0.getWeeknum() - arg1.getWeeknum();
-			if ( v == 0 ) {
+			if (v == 0) {
 				return arg0.getUserName().compareTo(arg1.getUserName());
 			}
 			return v;
 		}
 
 	}
-	
+
 	public static void main(String[] args) {
 		new Report4Spendtime().test();
 	}
