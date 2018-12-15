@@ -55,11 +55,9 @@ public class TableMap<T> {
 		return columnList;
 	}
 
- 
-
 	public void build(String string, String string2) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
