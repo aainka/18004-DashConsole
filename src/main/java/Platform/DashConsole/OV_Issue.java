@@ -62,7 +62,7 @@ public class OV_Issue {
 		if (orgIssue.getEstimatedHours() != null) {
 			this.estimatedHours = Math.round(orgIssue.getEstimatedHours());
 		}
-	 
+
 		if (orgIssue.getSpentHours() != null) {
 			this.spentHours = Math.round(orgIssue.getSpentHours());
 		}

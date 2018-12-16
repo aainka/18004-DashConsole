@@ -9,13 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.barolab.html.HmTR;
+import com.barolab.html.HttpPrintStream;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.TimeEntryManager;
 import com.taskadapter.redmineapi.bean.TimeEntry;
 import com.taskadapter.redmineapi.internal.ResultsWrapper;
-
-import src.main.java.com.barolab.html.HmTR;
-import src.main.java.com.barolab.html.HttpPrintStream;
 
 public class Report4Spendtime extends MainDashBoard {
 

@@ -22,9 +22,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src2</name>
+			<name>java</name>
 			<type>2</type>
-			<location>G:/sw-dev/eclipse-workspace-18b/18B07-BaroLabUtil/src</location>
+			<location>G:/sw-dev/eclipse-workspace-18b/18B07-BaroLabUtil/src/main/java</location>
 		</link>
 	</linkedResources>
 </projectDescription>
