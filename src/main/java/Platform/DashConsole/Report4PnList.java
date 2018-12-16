@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.barolab.HmTR;
-import com.barolab.HttpPrintStream;
+import com.barolab.html.HmTR;
+import com.barolab.html.HttpPrintStream;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.SavedQuery;
@@ -64,7 +64,7 @@ public class Report4PnList extends MainDashBoard {
 
 				String url = "http://redmine.ericssonlg.com/redmine/issues/" + issue.getId();
 
-				String ref = mkHref("<a href=%s %s >%d</a>", qt2(url), " target=" + qt1("_sub"),issue.getId());
+				String ref = mkHref("<a href=%s %s >%d</a>", qt2(url), " target=" + qt1("_sub"), issue.getId());
 				tr.addTD().setWidth(50).setAligh("center").add(count);
 				tr.addTD().setWidth(120).setAligh("center").add(ref);
 				tr.addTD().setWidth(120).add(issue.getStatus());
@@ -81,11 +81,12 @@ public class Report4PnList extends MainDashBoard {
 		}
 
 	}
-	public String mkHref(String msg, Object ... args ) {
+
+	public String mkHref(String msg, Object... args) {
 		String s = String.format(msg, args);
 		System.out.println(s);
 		return s;
-		
+
 	}
 
 	public String qt1(String msg) {

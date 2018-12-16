@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.barolab.html.HmTR;
-import com.barolab.html.HttpPrintStream;
+import com.barolab.HmTR;
+import com.barolab.HttpPrintStream;
+import com.barolab.util.TableMap;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.TimeEntryManager;
 import com.taskadapter.redmineapi.bean.TimeEntry;
@@ -58,9 +59,8 @@ public class Report4Spendtime extends MainDashBoard {
 		// *******************************
 
 		Collections.sort(listLogtime, new Ascending2());
-		// Map<String, List<OV_TimeEntry>> map = new HashMap<String,
-		// List<OV_TimeEntry>>();
-
+	//	Map<String, List<OV_TimeEntry>> map = new HashMap<String, List<OV_TimeEntry>>();
+		
 		TableMap<OV_TimeEntry> tbl = new TableMap<OV_TimeEntry>();
 		tbl.build("UserName", "WeekNum");
 		for (OV_TimeEntry te : listLogtime) {
@@ -68,18 +68,18 @@ public class Report4Spendtime extends MainDashBoard {
 		}
 		System.out.println(tbl.getRowKeys());
 		System.out.println(tbl.getColumnKeys());
-
+		
 		int sum = 0;
 
 		for (String rowKey : tbl.getRowKeys()) {
 			for (String colKey : tbl.getColumnKeys()) {
 				List<OV_TimeEntry> list = tbl.get(rowKey, colKey);
 				int size = 0;
-				if (list != null) {
+				if ( list != null) {
 					size = list.size();
 				}
 				sum += size;
-				System.out.println(rowKey + ", " + colKey + " " + sum);
+				System.out.println(rowKey + ", " + colKey + " "+ sum);
 			}
 		}
 
