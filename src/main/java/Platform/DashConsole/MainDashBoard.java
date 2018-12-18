@@ -9,10 +9,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.poi.ss.usermodel.Cell;
 
-import com.barolab.util.BeanAttribute;
 import com.barolab.util.ExcelObjectReader;
 import com.barolab.util.ExcelObjectWriter;
 import com.barolab.util.LogUtil;
+import com.barolab.util.model.BeanAttribute;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
@@ -62,13 +62,8 @@ public class MainDashBoard {
 
 	public void initInfo() {
 		String infopath = outDir + "RedmineManager\\Config\\Info.xlsx";
-		versionCache = VersionCache.builder()
-				.redmine(redmine)
-				.infopath(infopath)
-				.build();
+		versionCache = VersionCache.builder().redmine(redmine).infopath(infopath).build();
 		log.info("init Cache ###############");
-
-	
 
 	}
 
@@ -107,10 +102,10 @@ public class MainDashBoard {
 	}
 
 	public void test2() {
-		List<OV_Issue> nlist = (List<OV_Issue>) new ExcelObjectReader().read(OV_Issue.class, null,
-				outDir + "SR120-NEW.xlsx");
-		login();
-		excelObjectWriter.write(nlist, OV_Issue.class, "sheet1", outDir + "SR120-" + LogUtil.getToday() + ".xlsx");
+//		List<OV_Issue> nlist = (List<OV_Issue>) new ExcelObjectReader().read(OV_Issue.class, null,
+//				outDir + "SR120-NEW.xlsx");
+//		login();
+//		excelObjectWriter.write(nlist, OV_Issue.class, "sheet1", outDir + "SR120-" + LogUtil.getToday() + ".xlsx");
 	}
 
 	public void test3() {
@@ -120,28 +115,28 @@ public class MainDashBoard {
 		/**
 		 * loading redmine configuration
 		 */
-		String filename = outDir + "RedmineManager\\Config\\Info.xlsx";
-		List<OV_QueryInfo> queryList = (List<OV_QueryInfo>) new ExcelObjectReader().read(OV_QueryInfo.class, "Query",
-				filename);
-
-		/**
-		 * loading issues for each query
-		 */
-		for (OV_QueryInfo qinfo : queryList) {
-			// System.out.println("\n" + LogUtil.dump(qinfo));
-			System.out.println("\n" + qinfo);
-			try {
-				List<Issue> list = redmine.getIssueManager().getIssues(qinfo.getProjectId(), qinfo.getQueryNumber());
-				System.out.println("Load.Count = " + list.size());
-				qinfo.setIssues(OV_Issue.toList(list));
-				excelObjectWriter.write(qinfo.getIssues(), OV_Issue.class, qinfo.getOutfile_sheetname(),
-						outDir + "RedmineManager\\" + qinfo.getMemo() + "_" + LogUtil.getToday() + ".xlsx");
-			} catch (RedmineException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
+//		String filename = outDir + "RedmineManager\\Config\\Info.xlsx";
+//		List<OV_QueryInfo> queryList = (List<OV_QueryInfo>) new ExcelObjectReader().read(OV_QueryInfo.class, "Query",
+//				filename);
+//
+//		/**
+//		 * loading issues for each query
+//		 */
+//		for (OV_QueryInfo qinfo : queryList) {
+//			// System.out.println("\n" + LogUtil.dump(qinfo));
+//			System.out.println("\n" + qinfo);
+//			try {
+//				List<Issue> list = redmine.getIssueManager().getIssues(qinfo.getProjectId(), qinfo.getQueryNumber());
+//				System.out.println("Load.Count = " + list.size());
+//				qinfo.setIssues(OV_Issue.toList(list));
+//				excelObjectWriter.write(qinfo.getIssues(), OV_Issue.class, qinfo.getOutfile_sheetname(),
+//						outDir + "RedmineManager\\" + qinfo.getMemo() + "_" + LogUtil.getToday() + ".xlsx");
+//			} catch (RedmineException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//		}
 
 	}
 
