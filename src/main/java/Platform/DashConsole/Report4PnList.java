@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.barolab.html.HmTR;
 import com.barolab.html.HttpPrintStream;
+import com.barolab.util.model.ListUtils;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.SavedQuery;
@@ -30,12 +31,9 @@ public class Report4PnList extends MainDashBoard {
 			List<Issue> list = redmine.getIssueManager().getIssues("vepg-si-pr", 160);// proj, query
 			nlist = OV_Issue.toList(list);
 			log.info("load pr count=" + list.size());
-
-			Ascending ascending = new Ascending();
-			Collections.sort(nlist, ascending);
+			ListUtils.sort(nlist, "assignee");
 
 		} catch (RedmineException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
