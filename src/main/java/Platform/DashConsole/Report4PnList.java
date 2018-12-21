@@ -27,6 +27,10 @@ public class Report4PnList extends MainDashBoard {
 		login();
 		List<SavedQuery> savedQueries;
 		try {
+			
+			Issue ii = redmine.getIssueManager().getIssueById(39304 );
+			
+			System.out.println("ii="+ii.getNotes());
 
 			List<Issue> list = redmine.getIssueManager().getIssues("vepg-si-pr", 160);// proj, query
 			nlist = OV_Issue.toList(list);
@@ -68,6 +72,8 @@ public class Report4PnList extends MainDashBoard {
 				tr.addTD().setWidth(120).add(issue.getStatus());
 				tr.addTD().add(issue.getSubject());
 				tr.addTD().setWidth(150).add(issue.getAssignee());
+				tr.addTD().setWidth(150).add(issue.getClosed());
+				tr.addTD().setWidth(150).add(issue.getAuthor());
 				tr.toHTML(h);
 				count++;
 			}
