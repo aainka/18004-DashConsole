@@ -31,7 +31,7 @@ public class Report4PnList extends MainDashBoard {
 			List<Issue> list = redmine.getIssueManager().getIssues("vepg-si-pr", 160);// proj, query
 			nlist = OV_Issue.toList(list);
 			log.info("load pr count=" + list.size());
-			ListUtils.sort(nlist, "assignee");
+		//	ListUtils.sort(nlist, "assignee");
 
 		} catch (RedmineException e) {
 			e.printStackTrace();

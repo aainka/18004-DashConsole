@@ -16,10 +16,12 @@ public class OV_TimeEntry {
 	private int weeknum;
 	private String userName;
 	private int issueId;
+	private String subject;
 	private Date createdOn;
 	private Date spentOn;
 	private String comment;
 	private String projectName;
+	
 
 	public static List<OV_TimeEntry> transform(List<TimeEntry> list) {
 		List<OV_TimeEntry> nList = new ArrayList<OV_TimeEntry>();
