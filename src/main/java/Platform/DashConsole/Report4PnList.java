@@ -126,7 +126,7 @@ public class Report4PnList extends MainDashBoard {
 		MailApiClient mailApi = new MailApiClient();
 		List<OV_MailContent> list = new LinkedList<OV_MailContent>();
 		OV_MailContent item = new OV_MailContent();
-		item.subject = "PN-LISt";
+		item.subject = "PN-LISt2";
 		item.message = msg;
 		list.add(item);
 
