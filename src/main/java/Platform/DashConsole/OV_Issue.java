@@ -69,7 +69,7 @@ public class OV_Issue {
 		this.dueDate = orgIssue.getDueDate();
 		this.created = orgIssue.getCreatedOn();
 		this.closed = orgIssue.getClosedOn();
-		System.out.println("======="+orgIssue.getNotes());
-		orgIssue.geN
+	//	System.out.println("======="+orgIssue.get);
+		
 	}
 }

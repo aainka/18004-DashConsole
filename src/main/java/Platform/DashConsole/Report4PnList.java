@@ -1,14 +1,18 @@
 package Platform.DashConsole;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collections;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
+import com.barolab.MailApiClient;
+import com.barolab.OV_MailContent;
 import com.barolab.html.HmTR;
 import com.barolab.html.HttpPrintStream;
-import com.barolab.util.model.ListUtils;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.SavedQuery;
@@ -24,24 +28,26 @@ public class Report4PnList extends MainDashBoard {
 	// 이름순 소트 : 고객편의사항
 	// 상태별 소트
 	public void test() {
+
+		String filename = "C:/tmp/test.html";
 		login();
 		List<SavedQuery> savedQueries;
 		try {
-			
-			Issue ii = redmine.getIssueManager().getIssueById(39304 );
-			
-			System.out.println("ii="+ii.getNotes());
+
+			Issue ii = redmine.getIssueManager().getIssueById(39304);
+
+			System.out.println("ii=" + ii.getNotes());
 
 			List<Issue> list = redmine.getIssueManager().getIssues("vepg-si-pr", 160);// proj, query
 			nlist = OV_Issue.toList(list);
 			log.info("load pr count=" + list.size());
-		//	ListUtils.sort(nlist, "assignee");
+			// ListUtils.sort(nlist, "assignee");
 
 		} catch (RedmineException e) {
 			e.printStackTrace();
 		}
 
-		File fp = new File("C:/tmp/test.html");
+		File fp = new File(filename);
 		try {
 			HttpPrintStream h = new HttpPrintStream(fp);
 
@@ -56,7 +62,7 @@ public class Report4PnList extends MainDashBoard {
 				if (contains(issue.getSubject(), "(현상대기)", "R140예비", "R140검토")) {
 					continue;
 				}
-				log.info("#" + (count));
+				log.info("2#" + (count));
 
 				log.info(issue.getSubject() + " ==> " + issue.getAssignee());
 
@@ -82,6 +88,55 @@ public class Report4PnList extends MainDashBoard {
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+
+		// 화일읽기
+
+		BufferedReader br;
+		String msg = null;
+		try {
+			br = new BufferedReader(new FileReader(filename));
+			
+			try {
+				StringBuilder sb = new StringBuilder();
+				String line = br.readLine();
+
+				while (line != null) {
+					sb.append(line);
+					sb.append("\n");
+					line = br.readLine();
+				}
+				msg = sb.toString();
+				System.out.println(msg);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try {
+					br.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		MailApiClient mailApi = new MailApiClient();
+		List<OV_MailContent> list = new LinkedList<OV_MailContent>();
+		OV_MailContent item = new OV_MailContent();
+		item.subject = "PN-LISt";
+		item.message = msg;
+		list.add(item);
+
+		for (int i = 0; i < 1; i++) {
+			try {
+				mailApi.insert(list);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
