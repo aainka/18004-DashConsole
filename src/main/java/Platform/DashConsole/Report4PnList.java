@@ -29,7 +29,11 @@ public class Report4PnList extends MainDashBoard {
 	// 상태별 소트
 	public void test() {
 
-		String filename = "C:/tmp/test.html";
+		String filename = "C:/tmp/pnlist.html";
+
+		OV_LCM_DAO lcmDAO = new OV_LCM_DAO(OV_LCM.class);
+		lcmDAO.load(true);
+
 		login();
 		List<SavedQuery> savedQueries;
 		try {
@@ -55,6 +59,26 @@ public class Report4PnList extends MainDashBoard {
 			h.println("<table class='mytable' >");
 			for (OV_Issue issue : nlist) {
 
+				OV_LCM lcm = (OV_LCM) lcmDAO.find("issueNo", issue.getId());
+
+				if (lcm != null) {
+				//	if (lcm.getStatus().equals("Resolved")) {
+						if (h.bif("if (lcm.status = 'Resolved')")) {
+					//	issue.setStatus(lcm.getStatus());
+						h.exec("issue.status = term.status");
+					}
+				} else {
+					lcm = new OV_LCM();
+				}
+				
+				h.setObject("issue", issue);
+				h.setObject("lcm", lcm);
+				h.exec("lcm.issueNo = issue.id");
+				h.exec("lcm.subject = issue.subject");
+				h.exec("print lcm");
+				
+				System.out.println("############## LCM.subject= "+lcm.getSubject());
+
 				if (match(issue.getStatus(), "Resolved", "Closed", "Feedback")) {
 					continue;
 
@@ -62,6 +86,7 @@ public class Report4PnList extends MainDashBoard {
 				if (contains(issue.getSubject(), "(현상대기)", "R140예비", "R140검토")) {
 					continue;
 				}
+
 				log.info("2#" + (count));
 
 				log.info(issue.getSubject() + " ==> " + issue.getAssignee());
@@ -96,7 +121,7 @@ public class Report4PnList extends MainDashBoard {
 		String msg = null;
 		try {
 			br = new BufferedReader(new FileReader(filename));
-			
+
 			try {
 				StringBuilder sb = new StringBuilder();
 				String line = br.readLine();
@@ -123,20 +148,22 @@ public class Report4PnList extends MainDashBoard {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		if (true) {
+			return;
+		}
+
 		MailApiClient mailApi = new MailApiClient();
 		List<OV_MailContent> list = new LinkedList<OV_MailContent>();
 		OV_MailContent item = new OV_MailContent();
 		item.subject = "PN-LISt2";
 		item.message = msg;
 		list.add(item);
-
-		for (int i = 0; i < 1; i++) {
-			try {
-				mailApi.insert(list);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			mailApi.insert(list);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}

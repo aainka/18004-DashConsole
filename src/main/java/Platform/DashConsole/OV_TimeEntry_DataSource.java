@@ -33,7 +33,7 @@ public class OV_TimeEntry_DataSource extends ListUtils {
 				for (int offset = 0; offset < totalFound; offset += 90) {
 					params.put("limit", "90");
 					params.put("offset", "" + offset);
-					params.put("spent_on", "<2018-6-1|2018-12-30>");
+					params.put("spent_on", "<2019-1-1|2019-12-30>");
 					ResultsWrapper<TimeEntry> resultList = timeEntryManager.getTimeEntries(params);
 					System.out.println("* time.offset=" + offset);
 					System.out.println("  time.list=" + totalTimeEntry.size() + "/" + totalFound);

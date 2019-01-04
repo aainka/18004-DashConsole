@@ -17,16 +17,16 @@ public class Report4Spendtime {
 	HttpPrintStream h;
 	private LogConfig x = new LogConfig();
 
-	OV_Issue_DataSource issues = new OV_Issue_DataSource(OV_Issue.class);
+	OV_Issue_DAO issues = new OV_Issue_DAO(OV_Issue.class);
 	OV_TimeEntry_DataSource times = new OV_TimeEntry_DataSource(OV_TimeEntry.class);
 
 	public void test() {
 
-		issues.load(true);
+		issues.load(false);
 		issues.sort("id");
 		issues.writeExcel("c:/tmp/sorted_issues.xlsx");
 
-		times.load(true);
+		times.load(false);
 		times.removeElements("projectName", "WCDMA", "Redmine");
 		TableMap tableMap = times.toTableMap("weeknum", "userName");
 
@@ -68,7 +68,7 @@ public class Report4Spendtime {
 			HttpPrintStream h = new HttpPrintStream(fp);
 			HmTable htable = new HmTable();
 			for (String colKey : tableMap.getColumnKeys()) {
-				List<OV_TimeEntry> list = (List<OV_TimeEntry>) tableMap.get("51", colKey);
+				List<OV_TimeEntry> list = (List<OV_TimeEntry>) tableMap.get("1", colKey);
 				if (list == null) {
 					continue;
 				}
