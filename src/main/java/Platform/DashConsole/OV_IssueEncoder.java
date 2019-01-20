@@ -9,6 +9,7 @@ import javax.swing.tree.MutableTreeNode;
 
 import com.google.gson.reflect.TypeToken;
 
+import Platform.DashConsole.model.OV_Issue;
 import Platform.util.OI_TreeEncoder;
 
 public class OV_IssueEncoder extends OI_TreeEncoder {

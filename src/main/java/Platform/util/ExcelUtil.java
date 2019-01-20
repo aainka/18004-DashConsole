@@ -27,7 +27,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import Platform.DashConsole.OV_Issue;
+import Platform.DashConsole.model.OV_Issue;
 
 public class ExcelUtil {
 

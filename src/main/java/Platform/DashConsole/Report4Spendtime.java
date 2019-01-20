@@ -1,50 +1,140 @@
 package Platform.DashConsole;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
-import com.barolab.html.HmTR;
-import com.barolab.html.HmTable;
-import com.barolab.html.HttpPrintStream;
+import com.barolab.MailApiClient;
+import com.barolab.OV_MailContent;
+import com.barolab.html.HttpBuilder;
+
+import com.barolab.util.LogUtil;
 import com.barolab.util.TableMap;
 
+import Platform.DashConsole.model.DAO_Issue;
+import Platform.DashConsole.model.DAO_LCM;
+import Platform.DashConsole.model.DAO_TimeEntry;
+import Platform.DashConsole.model.DAO_User;
+import Platform.DashConsole.model.OV_Issue;
+import Platform.DashConsole.model.OV_LCM;
+import Platform.DashConsole.model.OV_TimeEntry;
 import lombok.extern.java.Log;
 
 @Log
 public class Report4Spendtime {
 
-	HttpPrintStream h;
-	private LogConfig x = new LogConfig();
+	HttpBuilder h;
+	private LogConfig logBox = new LogConfig();
 
-	OV_Issue_DAO issues = new OV_Issue_DAO(OV_Issue.class);
-	OV_TimeEntry_DataSource times = new OV_TimeEntry_DataSource(OV_TimeEntry.class);
+	DAO_Issue daoIssue = new DAO_Issue();
+	DAO_TimeEntry daoTime = new DAO_TimeEntry();
+	DAO_User daoUser = new DAO_User();
+	DAO_LCM daoLCM = new DAO_LCM();
 
 	public void test() {
 
-		issues.load(false);
-		issues.sort("id");
-		issues.writeExcel("c:/tmp/sorted_issues.xlsx");
+		boolean reuseSavedData = false;
 
-		times.load(false);
-		times.removeElements("projectName", "WCDMA", "Redmine");
-		TableMap tableMap = times.toTableMap("weeknum", "userName");
+		logBox.setLogLevel(Level.OFF, "com.barolab.util.ExcelObjectReader");
+		LogUtil.getOsName();
+
+	
+		/*
+		 * Issue DB
+		 */
+		daoIssue.load(reuseSavedData);
+//		daoIssue.sort("id");
+//		daoIssue.writeExcel("c:/tmp/sorted_issues.xlsx");
 
 		/**
-		 * update issue.subject to logtime
+		 * Time DB
 		 */
+		daoTime.load(reuseSavedData); // test mode flag
+		daoTime.removeElements("projectName", "WCDMA", "Redmine");
+		
 
-		for (OV_TimeEntry te : times.getList()) {
-			int id = te.getIssueId();
-			OV_Issue issue = (OV_Issue) issues.find("id", id);
-			if (issue == null) {
-				log.info("############ No data issue.id = " + id);
-			} else {
-				// log.info(" data id = "+issue.getId()+", su="+issue.getSubject());
-				te.setSubject(issue.getSubject());
+		daoUser.load(true); // @Todo
+		daoUser.convName(daoIssue.getList());
+		daoUser.convName2(daoTime.getList());
+
+		/**
+		 * LCM DB
+		 */
+		daoLCM.load(true); // @Todo
+
+		// times.toTableMap("issueNo", "userName");
+
+		/**
+		 * verify issueNo
+		 */
+		List<OV_LCM> add_list = new LinkedList<OV_LCM>();
+		TableMap tableMap = daoTime.toTableMap("issueId", "userName");
+		{
+			for (Object rowKey : tableMap.getRowKeys()) {
+				int issueId = Integer.parseInt((String) rowKey);
+				OV_LCM lcm = daoLCM.find("issueNo", issueId);
+				if (lcm != null) {
+				} else {
+					OV_Issue issue = daoIssue.find("id", issueId);
+					System.out.println(" add," + issueId + "," + issue.getSubject());
+				}
 			}
 		}
-		
+
+		TableMap table2 = daoTime.toTableMap("userName", "weeknum");
+
+		String msg = "test";
+		try {
+			HttpBuilder h = new HttpBuilder();
+			h.printTable(table2, daoTime, "hours", 50);
+			h.close();
+			msg = h.toString();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		/*
+		 * mail sending
+		 */
+		MailApiClient mailApi = new MailApiClient();
+		List<OV_MailContent> list = new LinkedList<OV_MailContent>();
+		OV_MailContent item = new OV_MailContent();
+		item.subject = "Logtime Summary " + LogUtil.getToday();
+		item.message = msg;
+		list.add(item);
+		try {
+			mailApi.insert(list);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		/**
+		 * update time.subject, time.lcm
+		 */
+		for (OV_TimeEntry te : daoTime.getList()) {
+			OV_Issue issue = daoIssue.find("id", te.getIssueId());
+			OV_LCM lcm = daoLCM.find("issueNo", te.getIssueId());
+			if (issue != null) {
+				te.setSubject(issue.getSubject());
+			}
+			if ( lcm != null ) {
+				te.setLcm(lcm.getLCM());
+			}
+		}
+
+		/**
+		 * update LCM_CODE
+		 */
+
+		daoLCM.writeExcel("c:/tmp/new_lcm.xlsx", add_list);
+		daoTime.writeExcel("c:/tmp/result_2019_time.xlsx");
+
+		System.out.println("### Collection Completed ");
+
 		// ********************************
 		// * REPORTING
 		// *******************************
@@ -53,53 +143,53 @@ public class Report4Spendtime {
 
 		for (String rowKey : tableMap.getRowKeys()) {
 			for (String colKey : tableMap.getColumnKeys()) {
-				List<OV_TimeEntry> list = (List<OV_TimeEntry>) tableMap.get(rowKey, colKey);
+				List<OV_TimeEntry> list2 = (List<OV_TimeEntry>) tableMap.get(rowKey, colKey);
 				int size = 0;
-				if (list != null) {
-					size = list.size();
+				if (list2 != null) {
+					size = list2.size();
 				}
 				sum += size;
 				// System.out.println(rowKey + ", " + colKey + " " + sum);
 			}
 		}
 
-		File fp = new File("C:/tmp/ReportSpendtime.html");
-		try {
-			HttpPrintStream h = new HttpPrintStream(fp);
-			HmTable htable = new HmTable();
-			for (String colKey : tableMap.getColumnKeys()) {
-				List<OV_TimeEntry> list = (List<OV_TimeEntry>) tableMap.get("1", colKey);
-				if (list == null) {
-					continue;
-				}
-				times.subsort(list,"issueId");
-				// ListUtils.sort(list, "issueId");
-				int sum2 = 0;
-				int count = 0;
-				for (OV_TimeEntry te : list) {
-					if (list != null) {
-						sum2 += te.getHours();
-						count++;
-					}
-				}
-				// OV_Issue issue = (OV_Issue) ListUtils.find(issues, "id",
-				// Integer.parseInt(colKey));
-				// HmTR tr = htable.addTR();
-
-				for (OV_TimeEntry te : list) {
-					HmTR tr = htable.addTR();
-					if (count > 0) {
-						tr.addTD().setAttribute("rowspan", count).add(colKey);
-						tr.addTD().setWidth(50).setAttribute("rowspan", count).add(sum2);
-						count = 0;
-					}
-					tr.addTD().add(te.getHours());
-					tr.addTD().add(te.getSubject());
-					tr.addTD().add(te.getComment());
-					tr.addTD().add(te.getSpentOn());
-				}
-			}
-			htable.toHTML(h);
+//		File fp2 = new File("C:/tmp/ReportSpendtime.html");
+//		try {
+//			HttpPrintStream h = new HttpPrintStream(fp2);
+//			HmTable htable = new HmTable();
+//			for (String colKey : tableMap.getColumnKeys()) {
+//				List<OV_TimeEntry> list3  = (List<OV_TimeEntry>) tableMap.get("1", colKey);
+//				if (list == null) {
+//					continue;
+//				}
+//			//	daoTime.subsort(list3, "issueId");
+//				// ListUtils.sort(list, "issueId");
+//				int sum2 = 0;
+//				int count = 0;
+//				for (OV_TimeEntry te : list3) {
+//					if (list != null) {
+//						sum2 += te.getHours();
+//						count++;
+//					}
+//				}
+//				// OV_Issue issue = (OV_Issue) ListUtils.find(issues, "id",
+//				// Integer.parseInt(colKey));
+//				// HmTR tr = htable.addTR();
+//
+//				for (OV_TimeEntry te : list3) {
+//					HmTR tr = htable.addTR();
+//					if (count > 0) {
+//						tr.addTD().setAttribute("rowspan", count).add(colKey);
+//						tr.addTD().setWidth(50).setAttribute("rowspan", count).add(sum2);
+//						count = 0;
+//					}
+//					tr.addTD().add(te.getHours());
+//					tr.addTD().add(te.getSubject());
+//					tr.addTD().add(te.getComment());
+//					tr.addTD().add(te.getSpentOn());
+//				}
+//			}
+//			htable.toHTML(h);
 
 //			int count = 1;
 //			h.println("<table class='mytable' >");
@@ -123,10 +213,13 @@ public class Report4Spendtime {
 //				count++;
 //			}
 //			h.println("</table>");
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//	}catch(
+//
+//	FileNotFoundException e1)
+//	{
+//		// TODO Auto-generated catch block
+//		e1.printStackTrace();
+//	}
 
 	}
 

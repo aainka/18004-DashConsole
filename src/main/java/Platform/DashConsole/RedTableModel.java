@@ -14,6 +14,7 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.RedmineManagerFactory;
 import com.taskadapter.redmineapi.bean.Issue;
 
+import Platform.DashConsole.model.OV_Issue;
 import Platform.util.ExcelUtil;
 
 public class RedTableModel implements TableModel {

@@ -2,6 +2,7 @@ package Platform.DashConsole;
 
 import java.util.List;
 
+import Platform.DashConsole.model.OV_Issue;
 import lombok.Data;
 
 @Data

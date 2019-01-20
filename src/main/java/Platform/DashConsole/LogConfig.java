@@ -21,4 +21,10 @@ public class LogConfig {
 		Logger.getLogger(VersionCache.class.getName()).setLevel(Level.ALL);
 	}
 
+	public void setLogLevel(Level newLevel, String scope) {
+		Logger logger = Logger.getLogger(scope);
+		logger.setLevel(newLevel);
+
+	}
+
 }

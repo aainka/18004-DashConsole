@@ -5,10 +5,11 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import com.barolab.html.HmTR;
-import com.barolab.html.HttpPrintStream;
+import com.barolab.html.HttpBuilder;
 import com.barolab.util.TableMap;
 import com.barolab.util.model.BeanClass;
 
+import Platform.DashConsole.model.OV_TimeEntry;
 import lombok.extern.java.Log;
 
 @Log
@@ -16,7 +17,7 @@ public class TestLogtime {
 
 	private LogConfig x = new LogConfig();
 	List<OV_TimeEntry> list;
-	HttpPrintStream h;
+	HttpBuilder h;
 	TableMap<OV_TimeEntry> tableMap;
 	BeanClass<OV_TimeEntry> LogtimeHelper = new BeanClass<OV_TimeEntry>(OV_TimeEntry.class);
 
@@ -36,7 +37,7 @@ public class TestLogtime {
 
 		try {
 			File fp = new File("C:/tmp/ReportSpendtime.html");
-			h = new HttpPrintStream(fp);
+			h = new HttpBuilder(fp);
 			int count = 1;
 			h.println("<table class='mytable' >");
 			{

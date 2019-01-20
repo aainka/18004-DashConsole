@@ -25,6 +25,8 @@ import com.taskadapter.redmineapi.bean.TimeEntry;
 import com.taskadapter.redmineapi.bean.Version;
 import com.taskadapter.redmineapi.internal.ResultsWrapper;
 
+import Platform.DashConsole.model.OV_Issue;
+import Platform.DashConsole.model.OV_TimeEntry;
 import lombok.extern.java.Log;
 
 @Log

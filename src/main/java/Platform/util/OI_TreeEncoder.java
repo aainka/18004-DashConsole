@@ -8,7 +8,7 @@ import javax.swing.tree.MutableTreeNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import Platform.DashConsole.OV_Issue;
+import Platform.DashConsole.model.OV_Issue;
 
 public abstract class OI_TreeEncoder {
 

@@ -18,6 +18,7 @@ import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.SavedQuery;
 
+import Platform.DashConsole.model.OV_Issue;
 import Platform.util.ExcelUtil;
 
 public class OV_DashDao {

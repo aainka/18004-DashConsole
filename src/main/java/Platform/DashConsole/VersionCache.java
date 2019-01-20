@@ -8,6 +8,7 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Version;
 
+import Platform.DashConsole.model.OV_User;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.java.Log;
@@ -24,7 +25,7 @@ public class VersionCache extends LinkedList<Version> {
 		this.redmine = redmine;
 		this.infopath = infopath;
 		log.info("User/ Project/ Loading");
-		OV_UserInfo.load(infopath);
+		OV_User.load(infopath);
 		OV_ProjectInfo.load(infopath);
 	}
 
