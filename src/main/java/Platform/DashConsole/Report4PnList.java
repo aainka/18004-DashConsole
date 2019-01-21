@@ -76,6 +76,9 @@ public class Report4PnList extends MainDashBoard {
 					// issue.setStatus(lcm.getStatus());
 					h.exec("issue.status = lcm.status");
 				}
+				if (contains(lcm.getMemo(), "차기검토","종결검토")) {
+					continue;
+				}
 			} else {
 				lcm = new OV_LCM();
 				daoLCM.getList().add(lcm);
@@ -93,6 +96,7 @@ public class Report4PnList extends MainDashBoard {
 			if (contains(issue.getSubject(), "(현상대기)", "R140예비", "R140검토")) {
 				continue;
 			}
+		
 			HmTR tr = new HmTR();
 			String url = "http://redmine.ericssonlg.com/redmine/issues/" + issue.getId();
 			String ref = mkHref("<a href=%s %s >%d</a>", qt2(url), " target=" + qt1("_sub"), issue.getId());
@@ -174,6 +178,9 @@ public class Report4PnList extends MainDashBoard {
 	}
 
 	public boolean contains(String key, String... args) {
+		if ( key == null) {
+			return false;
+		}
 		for (String arg : args) {
 			if (key.indexOf(arg) >= 0) {
 				return true;

@@ -28,7 +28,7 @@ public class DAO_User extends ListUtils<OV_User> {
 		list = (List<OV_User>) readExcel(filename, "User");
 		for (OV_User user : list) {
 			map.put(user.getEname(), user);
-			log.info("put = "+user.getEname());
+			log.fine( "put = "+user.getEname());
 		}
 		return list;
 	}
