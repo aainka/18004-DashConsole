@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
 import com.barolab.MailApiClient;
 import com.barolab.OV_MailContent;
 import com.barolab.html.HmTR;
@@ -32,17 +35,16 @@ public class Report4PnList extends MainDashBoard {
 	// 상태별 소트
 	public void test() {
 
-		String filename = "C:/tmp/pnlist2.html";
+		String filename = "C:/tmp/pnlist4.html";
 
 		DAO_Issue daoIssue = new DAO_Issue();
 		DAO_LCM daoLCM = new DAO_LCM();
-		daoLCM.load(false);
+		daoLCM.load(true); // isFromXls
 		
-		daoUser.load(true); // @Todo
-		daoUser.convName(daoIssue.getList());
+		daoUser.load(true); // @Todo isFromXls
+		
 
 		login();
-	//	List<SavedQuery> savedQueries;
 		try {
 			List<Issue> list = redmine.getIssueManager().getIssues("vepg-si-pr", 160);// proj, query
 			nlist = OV_Issue.toList(list);
@@ -52,6 +54,7 @@ public class Report4PnList extends MainDashBoard {
 		} catch (RedmineException e) {
 			e.printStackTrace();
 		}
+		daoUser.convName(nlist);
 
 		HttpBuilder h = null;
 		try {
@@ -62,15 +65,16 @@ public class Report4PnList extends MainDashBoard {
 			e2.printStackTrace();
 		}
 		int count = 1;
+		List<OV_LCM> newLcmList = new LinkedList<OV_LCM>();
 		h.println("<table class='mytable' >");
 		for (OV_Issue issue : nlist) {
 			h.setObject("issue", issue);
 			OV_LCM lcm = (OV_LCM) daoLCM.find("issueNo", issue.getId());
 			if (lcm != null) {
+				OV_LCM.excelUtils.writeValue(lcm, "created", issue.getCreated());
 				// LCM exist
 				h.setObject("lcm", lcm); // careful....
 				h.exec("issue.severity = lcm.severity");
-
 				h.exec("issue.assignee = lcm.designer");
 				if (match(lcm.getStatus(), "Resolved", "Hold")) {
 					// issue.setStatus(lcm.getStatus());
@@ -79,9 +83,16 @@ public class Report4PnList extends MainDashBoard {
 				if (contains(lcm.getMemo(), "차기검토","종결검토")) {
 					continue;
 				}
+				// recommand : lcm.updateXls("created",issue.getCreated());
+				
 			} else {
 				lcm = new OV_LCM();
 				daoLCM.getList().add(lcm);
+				lcm.setIssueNo(issue.getId());
+				lcm.setSubject(issue.getSubject());
+				lcm.setStatus(issue.getStatus());
+				lcm.setDesigner(issue.getAssignee());
+				newLcmList.add(lcm);
 			}
 
 			h.setObject("lcm", lcm);
@@ -120,6 +131,12 @@ public class Report4PnList extends MainDashBoard {
 			e2.printStackTrace();
 		}
 
+		try {
+			OV_LCM.excelUtils.append(newLcmList);
+		} catch (EncryptedDocumentException | InvalidFormatException | IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		daoLCM.save();
 
 		// 화일읽기

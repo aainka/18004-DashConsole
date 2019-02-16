@@ -6,10 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
 import com.barolab.MailApiClient;
 import com.barolab.OV_MailContent;
 import com.barolab.html.HttpBuilder;
-
 import com.barolab.util.LogUtil;
 import com.barolab.util.TableMap;
 
@@ -35,25 +37,23 @@ public class Report4Spendtime {
 
 	public void test() {
 
-		boolean reuseSavedData = false;
+		boolean isFromXls = false;
 
 		logBox.setLogLevel(Level.OFF, "com.barolab.util.ExcelObjectReader");
 		LogUtil.getOsName();
 
-	
 		/*
 		 * Issue DB
 		 */
-		daoIssue.load(reuseSavedData);
+		daoIssue.load(true);
 //		daoIssue.sort("id");
 //		daoIssue.writeExcel("c:/tmp/sorted_issues.xlsx");
 
 		/**
 		 * Time DB
 		 */
-		daoTime.load(reuseSavedData); // test mode flag
+		daoTime.load(isFromXls); // test mode flag
 		daoTime.removeElements("projectName", "WCDMA", "Redmine");
-		
 
 		daoUser.load(true); // @Todo
 		daoUser.convName(daoIssue.getList());
@@ -75,12 +75,29 @@ public class Report4Spendtime {
 			for (Object rowKey : tableMap.getRowKeys()) {
 				int issueId = Integer.parseInt((String) rowKey);
 				OV_LCM lcm = daoLCM.find("issueNo", issueId);
-				if (lcm != null) {
+				if (lcm != null) { // 있으면....
+
 				} else {
 					OV_Issue issue = daoIssue.find("id", issueId);
-					System.out.println(" add," + issueId + "," + issue.getSubject());
+					System.out.println("add to LCM : " + issueId + "," + issue.getSubject());
+					if (issue != null) {
+						lcm = new OV_LCM();
+						daoLCM.getList().add(lcm);
+						lcm.setIssueNo(issue.getId());
+						lcm.setSubject(issue.getSubject());
+						lcm.setStatus(issue.getStatus());
+						lcm.setDesigner(issue.getAssignee());
+						add_list.add(lcm);
+					}
 				}
 			}
+		}
+
+		try {
+			OV_LCM.excelUtils.append(add_list); // 신규추가 된 내용을 파일에 업데이트 한다.
+		} catch (EncryptedDocumentException | InvalidFormatException | IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
 
 		TableMap table2 = daoTime.toTableMap("userName", "weeknum");
@@ -121,7 +138,7 @@ public class Report4Spendtime {
 			if (issue != null) {
 				te.setSubject(issue.getSubject());
 			}
-			if ( lcm != null ) {
+			if (lcm != null) {
 				te.setLcm(lcm.getLCM());
 			}
 		}
@@ -130,7 +147,7 @@ public class Report4Spendtime {
 		 * update LCM_CODE
 		 */
 
-		daoLCM.writeExcel("c:/tmp/new_lcm.xlsx", add_list);
+		// daoLCM.writeExcel("c:/tmp/new_lcm.xlsx", add_list);
 		daoTime.writeExcel("c:/tmp/result_2019_time.xlsx");
 
 		System.out.println("### Collection Completed ");
